@@ -21,7 +21,7 @@ function buildMetadata(sample) {
 
      // Loop through each key pair of filteredMetadata dictionary and append to panel
      for (let key in fmd){
-         panel.append("p").text(`${key}: ${fmd[key]}`)
+         panel.append("p").text(`${key.toUpperCase()}: ${fmd[key]}`)
         //  console.log("Key: ", key, "Value: ", fmd[key]);
      }
   })
@@ -51,19 +51,71 @@ function buildCharts(sample) {
     console.log("sample_values", sampleValues);
 
     // Build a Bubble Chart
-
-
+    let bubbleTrace = {
+        x: sampleOtuIds,
+        y: sampleValues,
+        text: sampleOtuLabels,
+        mode: 'markers',
+        marker: {
+          color: sampleOtuIds,
+          opacity: [1, 0.8, 0.6, 0.4],
+          size: sampleValues
+        }
+      };
+      
+      let bubbleData = [bubbleTrace];
+      
+      let bubbleLayout = {
+        title: 'Bacteria Cultures Per Sample',
+        xaxis: { title: 'OTU ID' },  // X-axis label
+        yaxis: { title: 'Number of Bacteria' },  // Y-axis label
+        showlegend: false,
+        height: 800,
+        width: 1000
+      };
+    
     // Render the Bubble Chart
+    Plotly.newPlot('bubble', bubbleData, bubbleLayout);
 
 
     // For the Bar Chart, map the otu_ids to a list of strings for your yticks
 
 
     // Build a Bar Chart
-    // Don't forget to slice and reverse the input data appropriately
+   
+
+    // Create an array of objects that combines otu_ids, otu_labels, and sample_values
+    let sampleData = fs.otu_ids.map((otu_id, index) => ({
+        otu_id: otu_id,
+        otu_label: fs.otu_labels[index],
+        sample_value: fs.sample_values[index]
+    }));
+
+     // Don't forget to slice and reverse the input data appropriately
+    let sortedBysampleValues = sampleData.sort((a, b) => b.sample_values - a.sample_values);
+    let slicedData = sortedBysampleValues.slice(0, 10);
+    slicedData.reverse();
+    console.log("Bar Data Sliced", slicedData);
+
+
+    let barTrace = {
+        x: slicedData.map(d => d.sample_value),
+        y: slicedData.map(d => `OTU ${d.otu_id}`),
+        text: slicedData.map(d => d.otu_label),
+        orientation: 'h',
+        type: 'bar'
+    };
+
+    let barData = [barTrace];
+
+    let barLayout = {
+        title: 'Top 10 Bacteria Cultures Found',
+        xaxis: { title: 'Number of Bacteria' },  // Y-axis label
+    };
 
 
     // Render the Bar Chart
+    Plotly.newPlot('bar', barData, barLayout);
 
   });
 }
