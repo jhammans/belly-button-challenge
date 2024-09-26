@@ -58,7 +58,7 @@ function buildCharts(sample) {
         mode: 'markers',
         marker: {
           color: sampleOtuIds,
-          opacity: [1, 0.8, 0.6, 0.4],
+        //   opacity: [1, 0.8, 0.6, 0.4],
           size: sampleValues
         }
       };
